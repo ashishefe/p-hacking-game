@@ -126,7 +126,7 @@ export default function GamePage() {
             </span>
           </div>
 
-          <div style={{ padding: "20px 24px", display: "grid", gridTemplateColumns: "1fr 300px", gap: "32px" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px]" style={{ padding: "20px 24px", gap: "32px" }}>
             {/* Left: narrative */}
             <div>
               <h2 style={{ fontFamily: "var(--font-playfair)", fontSize: "1.35rem", fontWeight: 600, color: "var(--navy)", marginBottom: "14px" }}>
@@ -186,7 +186,7 @@ export default function GamePage() {
         </div>
 
         {/* ── Main two-column layout ────────────────────────────── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "20px", alignItems: "start" }}>
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px]" style={{ gap: "20px", alignItems: "start" }}>
 
           {/* Left: data + exploration + chat */}
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -211,8 +211,8 @@ export default function GamePage() {
             </Card>
           </div>
 
-          {/* Right: sticky tracker */}
-          <div style={{ position: "sticky", top: "20px" }}>
+          {/* Right: sticky tracker (sticky only on xl+) */}
+          <div className="xl:sticky xl:top-5">
             <Card label="Analysis Tracker" meta="Your research record">
               <AnalysisTracker entries={tracker} onPublish={handlePublish} />
             </Card>

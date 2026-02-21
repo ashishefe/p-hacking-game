@@ -235,7 +235,7 @@ export default function RevealPage() {
             {step === "recap" && (
               <>
                 {/* Stat grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+                <div className="grid grid-cols-2 sm:grid-cols-4" style={{ gap: "12px" }}>
                   {[
                     { label: "Analyses run", value: totalAnalyses, variant: "neutral" },
                     { label: "Significant results", value: sigCount, variant: sigCount > 0 ? "amber" : "neutral" },

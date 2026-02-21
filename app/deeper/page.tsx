@@ -134,7 +134,7 @@ export default function DeeperPage() {
           marginBottom: "20px",
         }}>
           <SectionHeader label="01" title="Read the Full Essay" />
-          <div style={{ padding: "24px 28px", display: "grid", gridTemplateColumns: "1fr auto", gap: "32px", alignItems: "start" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto]" style={{ padding: "24px 28px", gap: "24px", alignItems: "start" }}>
             <div>
               <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", lineHeight: 1.75, margin: 0 }}>
                 The game you just played is the opening act. The full story — why this happens, how it works,
@@ -191,7 +191,7 @@ export default function DeeperPage() {
               </a>{" "}
               for a richer study experience:
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "16px" }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3" style={{ gap: "12px", marginBottom: "16px" }}>
               {[
                 { icon: "💬", title: "Ask questions", desc: "Get explanations of any concept you didn't fully understand" },
                 { icon: "🧠", title: "Get quizzed", desc: "Ask it to quiz you on the key ideas from the essay" },
@@ -257,7 +257,7 @@ export default function DeeperPage() {
             </button>
           </div>
 
-          <div style={{ padding: "24px 28px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2" style={{ padding: "24px 28px", gap: "32px" }}>
             {/* Comprehension */}
             <div>
               <p style={{ fontFamily: "var(--font-mono-plex)", fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 600, marginBottom: "14px" }}>

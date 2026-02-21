@@ -98,7 +98,7 @@ export default function GuidedExploration({ onSelect }: GuidedExplorationProps) 
         <p style={{ fontFamily: "var(--font-mono-plex)", fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: 600, marginBottom: "10px" }}>
           Tests available — click any to read the Wikipedia article
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "8px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "8px" }}>
           {TESTS.map((t) => (
             <a
               key={t.name}
