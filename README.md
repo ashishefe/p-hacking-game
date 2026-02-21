@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The P-Hacking Game
 
-## Getting Started
+A classroom web app that teaches students what p-hacking is through direct experience. Students unknowingly p-hack a fake agricultural dataset, then the curtain drops — revealing that everything they "found" was a false positive from pure noise.
 
-First, run the development server:
+Built for Ashish Kulkarni's statistics courses at Gokhale Institute and Takshashila Institution.
+
+## How it works
+
+**Page 1 — The Game:** Students explore a realistic-looking 200-farm dataset studying the fictional "GrowMax" fertilizer. They chat with an AI assistant to run statistical analyses (t-tests, ANOVA, regression) and try to find a significant result (p < 0.05) to "publish."
+
+**Page 2 — The Reveal:** The dataset was 100% randomly generated. Every variable is independent. GrowMax doesn't do anything. The game shows students exactly how many tests they ran and how likely a false positive was given that number.
+
+**Page 3 — Go Deeper:** The full essay on p-hacking, NotebookLM instructions, and downloadable discussion questions.
+
+## Stack
+
+- **Next.js 15** (App Router) + TypeScript + Tailwind CSS
+- **Gemini 1.5 Flash** for parsing analysis intent and narrating results
+- **simple-statistics** for client-side t-tests, ANOVA, and regression
+- Deployable to **Vercel** with one environment variable
+
+## Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Add your Gemini API key
+# Edit .env.local and set GEMINI_API_KEY=your_key_here
+
+# Run locally
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Get a free Gemini API key at [aistudio.google.com](https://aistudio.google.com/).
 
-## Learn More
+## Deploy to Vercel
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+vercel deploy
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set `GEMINI_API_KEY` in your Vercel project environment variables.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Or connect your GitHub repo and let Vercel handle auto-deployments.
 
-## Deploy on Vercel
+## Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **`/`** — Game page (dataset table, AI chat, analysis tracker, publish button)
+- **`/reveal`** — Reveal page (animated rug-pull, p-value plot, explanation)
+- **`/deeper`** — Go Deeper page (essay, NotebookLM guide, discussion questions)
+- **`/api/chat`** — Server-side Gemini route (parse mode + narrate mode)
+- **`lib/dataset.ts`** — Seeded PRNG dataset generation (200 rows, 11 variables)
+- **`lib/statistics.ts`** — Client-side stats (Welch's t-test, OLS regression, one-way ANOVA)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Key design decision:** Gemini never sees the raw dataset. The client parses the user's intent via Gemini, runs real statistics locally, then Gemini narrates the results. This prevents hallucinated p-values and keeps token costs low.
+
+## Development notes
+
+- The dataset is generated client-side with a seeded LCG so results are consistent within a session
+- Game state (tracker + published finding) is passed to the Reveal page via `sessionStorage`
+- The AI assistant is deliberately instructed to encourage further analysis and never warn about p-hacking
