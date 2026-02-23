@@ -1,10 +1,11 @@
 import fs from "fs";
 import path from "path";
 import Link from "next/link";
+import DownloadButton from "./DownloadButton";
 
-// Server component — reads and renders the essay markdown
-export default function EssayPage() {
-  const filePath = path.join(process.cwd(), "public", "essay.md");
+// Server component — reads and renders the appendix markdown
+export default function AppendixPage() {
+  const filePath = path.join(process.cwd(), "public", "appendix-econ.md");
   const raw = fs.readFileSync(filePath, "utf-8");
   const sections = parseMarkdown(raw);
 
@@ -15,43 +16,22 @@ export default function EssayPage() {
         <div style={{ maxWidth: "760px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <h1 style={{ fontFamily: "var(--font-playfair)", color: "#ffffff", fontSize: "1.1rem", fontWeight: 700, margin: 0 }}>
-              The Story of P-Hacking
+              Appendix for Economics Students
             </h1>
             <p style={{ fontFamily: "var(--font-mono-plex)", color: "#93c5fd", fontSize: "0.68rem", margin: "3px 0 0", letterSpacing: "0.04em" }}>
-              ~15 minute read · Research Methods Series
+              ~10 minute read · Companion to the main essay
             </p>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-            <Link href="/deeper" style={{ fontFamily: "var(--font-source), serif", color: "#7dd3fc", fontSize: "0.85rem", textDecoration: "none" }}>
-              ← Back
+            <Link href="/essay" style={{ fontFamily: "var(--font-source), serif", color: "#7dd3fc", fontSize: "0.85rem", textDecoration: "none" }}>
+              ← Main Essay
             </Link>
-            <Link href="/appendix" target="_blank" style={{
-              fontFamily: "var(--font-source), serif",
-              color: "#fbbf24",
-              fontSize: "0.85rem",
-              textDecoration: "none",
-              fontWeight: 600,
-            }}>
-              Appendix for Econ Students
-            </Link>
-            <Link href="/" style={{
-              fontFamily: "var(--font-source), serif",
-              color: "#ffffff",
-              background: "rgba(255,255,255,0.12)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              borderRadius: "5px",
-              fontSize: "0.8rem",
-              padding: "5px 12px",
-              fontWeight: 600,
-              textDecoration: "none",
-            }}>
-              New game
-            </Link>
+            <DownloadButton />
           </div>
         </div>
       </header>
 
-      {/* Essay body */}
+      {/* Body */}
       <main style={{ maxWidth: "720px", margin: "0 auto", padding: "48px 32px 80px" }}>
         {/* Title block */}
         <div style={{ marginBottom: "48px", paddingBottom: "32px", borderBottom: "2px solid var(--border)" }}>
@@ -63,7 +43,7 @@ export default function EssayPage() {
             color: "var(--text-muted)",
             marginBottom: "16px",
           }}>
-            Research Methods · Statistical Inference
+            Appendix · Applied Microeconomics
           </p>
           <h1 style={{
             fontFamily: "var(--font-playfair)",
@@ -73,7 +53,7 @@ export default function EssayPage() {
             lineHeight: 1.2,
             marginBottom: "16px",
           }}>
-            The Story of P-Hacking: Why You Should Read Research Papers With One Eyebrow Raised
+            Appendix for Economics Students: P-Hacking in Your Own Backyard
           </h1>
         </div>
 
@@ -91,11 +71,11 @@ export default function EssayPage() {
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-          <Link href="/deeper" style={{ color: "var(--forest)", fontSize: "0.85rem", textDecoration: "none", fontFamily: "var(--font-source), serif" }}>
-            ← Go Deeper
+          <Link href="/essay" style={{ color: "var(--forest)", fontSize: "0.85rem", textDecoration: "none", fontFamily: "var(--font-source), serif" }}>
+            ← Main Essay
           </Link>
-          <Link href="/" style={{ color: "var(--text-muted)", fontSize: "0.82rem", textDecoration: "none", fontFamily: "var(--font-source), serif" }}>
-            Start a new game →
+          <Link href="/deeper" style={{ color: "var(--text-muted)", fontSize: "0.82rem", textDecoration: "none", fontFamily: "var(--font-source), serif" }}>
+            Go Deeper →
           </Link>
         </div>
       </main>
@@ -103,7 +83,7 @@ export default function EssayPage() {
   );
 }
 
-// ── Simple markdown parser ───────────────────────────────────────────────────
+// ── Simple markdown parser (same as essay page) ─────────────────────────────
 
 type Block =
   | { type: "h1"; text: string }
@@ -111,7 +91,8 @@ type Block =
   | { type: "h3"; text: string }
   | { type: "hr" }
   | { type: "p"; text: string }
-  | { type: "blank" };
+  | { type: "blank" }
+  | { type: "ol_item"; text: string };
 
 function parseMarkdown(raw: string): Block[] {
   const lines = raw.split("\n");
@@ -124,6 +105,9 @@ function parseMarkdown(raw: string): Block[] {
     if (trimmed.startsWith("## ")) { blocks.push({ type: "h2", text: trimmed.slice(3) }); continue; }
     if (trimmed.startsWith("# ")) { blocks.push({ type: "h1", text: trimmed.slice(2) }); continue; }
     if (trimmed === "---") { blocks.push({ type: "hr" }); continue; }
+    // Numbered list items
+    const olMatch = trimmed.match(/^(\d+)\.\s+(.+)/);
+    if (olMatch) { blocks.push({ type: "ol_item", text: olMatch[2] }); continue; }
     blocks.push({ type: "p", text: trimmed });
   }
 
@@ -132,7 +116,6 @@ function parseMarkdown(raw: string): Block[] {
 
 // Convert inline markdown (bold, italic, links, code, sup) → React elements
 function inlineToReact(text: string, key: string) {
-  // We'll build segments by parsing through the string
   const segments: React.ReactNode[] = [];
   let i = 0;
   let buf = "";
@@ -253,6 +236,19 @@ function renderSection(block: Block, i: number) {
       );
     case "blank":
       return null;
+    case "ol_item":
+      return (
+        <p key={i} style={{
+          fontSize: "1rem",
+          lineHeight: 1.85,
+          marginBottom: "12px",
+          paddingLeft: "24px",
+          color: "var(--text-secondary)",
+          fontFamily: "var(--font-source), Georgia, serif",
+        }}>
+          {inlineToReact(block.text, String(i))}
+        </p>
+      );
     case "p":
       return (
         <p key={i} style={{

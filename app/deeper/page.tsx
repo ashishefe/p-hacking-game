@@ -143,7 +143,7 @@ export default function DeeperPage() {
                 the replication crisis, and practical habits for reading research with one eyebrow raised.
               </p>
             </div>
-            <div style={{ flexShrink: 0 }}>
+            <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
               <button
                 onClick={() => window.open("/essay", "_blank")}
                 style={{
@@ -165,7 +165,28 @@ export default function DeeperPage() {
               >
                 Read the Essay →
               </button>
-              <p style={{ fontSize: "0.68rem", color: "var(--text-faint)", fontFamily: "var(--font-mono-plex)", marginTop: "6px", textAlign: "center" }}>
+              <button
+                onClick={() => window.open("/appendix", "_blank")}
+                style={{
+                  display: "block",
+                  padding: "9px 22px",
+                  background: "transparent",
+                  color: "var(--navy)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "6px",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  fontFamily: "var(--font-source), serif",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  transition: "background 0.15s, border-color 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.borderColor = "var(--border-strong)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "var(--border)"; }}
+              >
+                Appendix for Econ Students
+              </button>
+              <p style={{ fontSize: "0.68rem", color: "var(--text-faint)", fontFamily: "var(--font-mono-plex)", marginTop: "2px", textAlign: "center" }}>
                 opens in new tab
               </p>
             </div>
