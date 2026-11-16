@@ -65,8 +65,6 @@ export function runTTest(
 
   const mean1 = ss.mean(vals1);
   const mean2 = ss.mean(vals2);
-  const var1 = ss.variance(vals1);
-  const var2 = ss.variance(vals2);
   const n1 = vals1.length;
   const n2 = vals2.length;
 
@@ -82,6 +80,10 @@ export function runTTest(
       significant: false,
     };
   }
+
+  // Welch uses unbiased sample variances (n - 1), not population variances.
+  const var1 = ss.sampleVariance(vals1);
+  const var2 = ss.sampleVariance(vals2);
 
   // Welch's t-statistic
   const se = Math.sqrt(var1 / n1 + var2 / n2);
@@ -283,14 +285,16 @@ export function runAnalysis(data: Farm[], request: AnalysisRequest): StatResult 
 // ---- Statistical distribution helpers ----
 
 // Two-tailed p-value from t-distribution using regularized incomplete beta
-function tDistPValue(t: number, df: number): number {
+export function tDistPValue(t: number, df: number): number {
   // Use the relationship between t and F: F = t²
   return fDistPValue(t * t, 1, df);
 }
 
 // p-value from F-distribution using regularized incomplete beta
-function fDistPValue(F: number, df1: number, df2: number): number {
-  if (F <= 0 || isNaN(F) || !isFinite(F)) return 1;
+export function fDistPValue(F: number, df1: number, df2: number): number {
+  if (!Number.isFinite(df1) || !Number.isFinite(df2) || df1 <= 0 || df2 <= 0 || Number.isNaN(F) || F < 0) return NaN;
+  if (F === 0) return 1;
+  if (F === Infinity) return 0;
   const x = df2 / (df2 + df1 * F);
   return regularizedIncompleteBeta(x, df2 / 2, df1 / 2);
 }
@@ -301,13 +305,16 @@ function regularizedIncompleteBeta(x: number, a: number, b: number): number {
   if (x === 0) return 0;
   if (x === 1) return 1;
 
-  const lbeta = lgamma(a + b) - lgamma(a) - lgamma(b);
-  const front =
-    Math.exp(Math.log(x) * a + Math.log(1 - x) * b - lbeta) / a;
+  // This is log(1 / B(a,b)), so it must be ADDED to the exponent.
+  // NIST DLMF 8.17.2: I_x(a,b) = B_x(a,b) / B(a,b).
+  const logInverseBeta = lgamma(a + b) - lgamma(a) - lgamma(b);
+  const front = Math.exp(a * Math.log(x) + b * Math.log1p(-x) + logInverseBeta);
 
-  // Use Lentz's continued fraction method
-  const cf = betaContinuedFraction(x, a, b);
-  return front * cf;
+  // Evaluate the well-converging tail; direct evaluation near x=1 can fail.
+  const value = x < (a + 1) / (a + b + 2)
+    ? front * betaContinuedFraction(x, a, b) / a
+    : 1 - front * betaContinuedFraction(1 - x, b, a) / b;
+  return Math.max(0, Math.min(1, value));
 }
 
 function betaContinuedFraction(x: number, a: number, b: number): number {
