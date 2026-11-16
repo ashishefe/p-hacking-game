@@ -6,7 +6,7 @@ A classroom web app that teaches students what p-hacking is through direct exper
 
 **Page 1 — The Game:** Students explore a realistic-looking 200-farm dataset studying the fictional "GrowMax" fertilizer. They chat with an AI assistant to run statistical analyses (t-tests, ANOVA, regression) and try to find a significant result (p < 0.05) to "publish." Must run at least 5 analyses before publishing.
 
-**Page 2 — The Reveal:** The dataset was 100% randomly generated. Every variable is independent. GrowMax doesn't do anything. The game shows students exactly how many tests they ran and how likely a false positive was given that number.
+**Page 2 — The Reveal:** The dataset was 100% randomly generated. Every variable is independent. GrowMax doesn't do anything. The game shows how many analyses they ran and an explicitly labelled independent-tests illustration of false-positive risk, not an estimate of their session's actual risk.
 
 **Page 3 — Go Deeper:** The full essay on p-hacking rendered as a readable page, NotebookLM instructions, downloadable discussion questions, and key references.
 
@@ -61,3 +61,16 @@ Connect your GitHub repo and Vercel handles auto-deployments on every push to `m
 - Game state (tracker + published finding) is passed to the Reveal page via `sessionStorage`
 - The AI assistant is deliberately instructed to encourage further analysis and never warn about p-hacking
 - The publish button requires both ≥5 analyses run AND at least one result with p < 0.05
+
+## Statistical regression tests
+
+Run `npm test` for distribution and analysis regression tests, and `npm run typecheck`
+for TypeScript checking. Tests compile the statistics module into the ignored
+`.test-build/` directory and require no Gemini key or network access.
+
+The checked-in reference values were generated with SciPy 1.17.0 (`f.sf`, `t.sf`,
+`ttest_ind(equal_var=False)`, `f_oneway`, and `linregress`). To regenerate them in a
+Python environment with SciPy installed, run `python tests/generate-reference.py`.
+The F(4,4) survival probability at F=1 also has the independent exact value 0.5.
+Fixtures cover small and large tails and fractional Welch degrees of freedom;
+they are a regression suite, not proof of correctness for every possible input.

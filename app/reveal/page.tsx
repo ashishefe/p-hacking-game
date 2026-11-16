@@ -146,9 +146,9 @@ export default function RevealPage() {
                 You ran <strong style={{ color: "var(--navy)" }}>{totalAnalyses} analyses</strong>{" "}
                 and found{" "}
                 {sigCount > 0 ? (
-                  <><strong style={{ color: "var(--rust)" }}>{sigCount}</strong> with p &lt; 0.05. That&apos;s not a discovery — that&apos;s exactly what probability theory predicts.</>
+                  <><strong style={{ color: "var(--rust)" }}>{sigCount}</strong> with p &lt; 0.05. That&apos;s not evidence that GrowMax works: searching many analyses can uncover chance patterns.</>
                 ) : (
-                  <>none with p &lt; 0.05 — but you got very close.</>
+                  <>none with p &lt; 0.05. Searching does not guarantee a significant result.</>
                 )}
               </p>
             </div>
@@ -171,8 +171,8 @@ export default function RevealPage() {
                   <div style={{ padding: "0" }}>
                     {[
                       {
-                        label: "The mathematics of false positives",
-                        text: `If you run ${totalAnalyses} tests at α = 0.05 on data where nothing is real, the probability of at least one false positive is 1 − 0.95${totalAnalyses} ≈ ${fpProb.toFixed(0)}%. You didn't get lucky. You got statistics.`,
+                        label: "An independent-tests illustration",
+                        text: "An illustration under independent, calibrated null tests.",
                         math: true,
                         n: totalAnalyses,
                         fp: fpProb,
@@ -212,11 +212,11 @@ export default function RevealPage() {
                           </p>
                           {item.math ? (
                             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>
-                              If you run {item.n} tests at α = 0.05 on data where nothing is real, the probability of at least one false positive is{" "}
+                              For {item.n} independent tests, each with a 5% false-positive rate under the null, the probability of at least one false positive is{" "}
                               <span style={{ fontFamily: "var(--font-mono-plex)", color: "var(--rust)", fontWeight: 600 }}>
                                 1 − 0.95<sup>{item.n}</sup> ≈ {item.fp!.toFixed(0)}%
                               </span>
-                              . You didn&apos;t get lucky. You got statistics.
+                              . This illustrates the multiple-testing problem; it is not your session&apos;s actual risk. Your analyses share data and can repeat the same test, so they are not independent.
                             </p>
                           ) : (
                             <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>
@@ -240,7 +240,7 @@ export default function RevealPage() {
                     { label: "Analyses run", value: totalAnalyses, variant: "neutral" },
                     { label: "Significant results", value: sigCount, variant: sigCount > 0 ? "amber" : "neutral" },
                     { label: "Published p-value", value: publishedP !== undefined ? publishedP.toFixed(3) : "—", variant: "red" },
-                    { label: "Actual false positive risk", value: `~${fpProb.toFixed(0)}%`, variant: "red" },
+                    { label: "Independent-tests illustration", value: `~${fpProb.toFixed(0)}%`, variant: "red" },
                   ].map((s) => (
                     <div key={s.label} style={{
                       background: s.variant === "red" ? "var(--rust-bg)" : s.variant === "amber" ? "var(--amber-bg)" : "var(--card-bg)",
@@ -285,8 +285,8 @@ export default function RevealPage() {
                     </div>
                     <PValuePlot entries={tracker} publishedEntry={publishedEntry} />
                     <p style={{ fontSize: "0.83rem", color: "var(--text-muted)", textAlign: "center", marginTop: "12px", lineHeight: 1.6 }}>
-                      You tested <strong style={{ color: "var(--navy)" }}>{totalAnalyses}</strong> {totalAnalyses === 1 ? "hypothesis" : "hypotheses"} and reported 1 result.
-                      Your actual false positive risk was <strong style={{ color: "var(--rust)" }}>{fpProb.toFixed(0)}%</strong> — not 5%.
+                      You ran <strong style={{ color: "var(--navy)" }}>{totalAnalyses}</strong> analyses and reported 1 result.
+                      Selecting a result after searching can inflate false-positive risk; the number of analyses alone does not tell us your actual risk.
                     </p>
                   </div>
                 )}
